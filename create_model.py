@@ -5,7 +5,7 @@ import keras.backend as K
 from keras.utils import get_file
 from keras.layers.core import SpatialDropout2D, Activation
 from keras.layers import Flatten, Dropout
-from keras import layers
+from keras import layers, Sequential
 
 
 def createResNet50(in_t, printmodel = False):
