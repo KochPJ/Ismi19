@@ -9,16 +9,18 @@ from keras import layers, Sequential
 
 
 def createResNet50(in_t, printmodel = False):
-    model = resnet50.ResNet50(include_top=False, weights='imagenet', input_tensor=in_t)
+    model = resnet50.ResNet50(include_top= None, input_tensor=in_t) #weights='imagenet'
 
     # freeze the layers
-    for layer in model.layers:
-        layer.trainable = False
+    #for layer in model.layers:
+    #    layer.trainable = False
 
     # get the output of the model
     x = model.layers[-2].output
 
     x = Flatten()(x)
+    
+    x = layers.Dense(512, activation='relu')(x)
 
     x = layers.Dense(256, activation='relu')(x)
 
