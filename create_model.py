@@ -16,7 +16,6 @@ def createResNet50(in_t, printmodel = False):
     set_trainable=False
     for layer in model.layers:
         if layer.name == 'res5a_branch2a':
-            print('heyho')
             set_trainable = True
         if set_trainable:
             layer.trainable = True
@@ -35,6 +34,64 @@ def createResNet50(in_t, printmodel = False):
     x = Dropout(0.5)(x)
 
     x_out = layers.Dense(2, activation='softmax')(x)
+
+    ResNet_new = Model(input=in_t, output=x_out)
+
+    if(printmodel):
+        ResNet_new.summary()
+
+    return ResNet_new
+
+
+
+def createResNet50Top(in_t, printmodel = False):
+    model = resnet50.ResNet50(include_top= False, weights='imagenet' ,input_tensor=in_t) #
+
+    model.Trainable=True
+
+    set_trainable=False
+    for layer in model.layers:
+        if layer.name == 'res5a_branch2a':
+            set_trainable = True
+        if set_trainable:
+            layer.trainable = True
+        else:
+            layer.trainable = False
+
+    # get the output of the model
+    x = model.layers[-2].output
+
+   # x = Flatten()(x)
+    
+   # x = layers.Dense(256, activation='relu')(x)
+    
+    x = layers.Conv2D(256, 
+                      3, 
+                      padding='valid',
+                     activation = 'relu',
+                     kernel_initializer='he_normal')(x)
+
+    x = layers.Conv2D(512, 
+                      1, 
+                     padding='valid',
+                     activation = 'relu',
+                     kernel_initializer='he_normal')(x)
+
+
+    x = layers.BatchNormalization()(x)
+
+    x = Dropout(0.5)(x)
+                     
+    x = layers.Conv2D(2, 
+                          1,
+                          padding='valid',
+                          activation = 'softmax',
+                          kernel_initializer='he_normal')(x)
+    
+    x_out = Flatten()(x)
+
+
+#    x_out = layers.Dense(2, activation='softmax')(x)
 
     ResNet_new = Model(input=in_t, output=x_out)
 
